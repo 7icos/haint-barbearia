@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Haint | Barbearia em Aracati - CE</title>
+<meta name="description" content="Cortes masculinos, degradês e barba em Aracati - CE. Agende com o barbeiro Lucas pelo WhatsApp.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✂️</text></svg>">
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:dark}
+html{scroll-behavior:smooth;scroll-padding-top:7.5rem}
+body{font-family:'Inter',system-ui,sans-serif;background:#171717;color:#f5f5f5}
+.serif{font-family:'Playfair Display',Georgia,serif}
+.modal{opacity:0;pointer-events:none;transition:opacity .2s}.modal.open{opacity:1;pointer-events:auto}
+.modal>.box{transform:scale(.96);transition:transform .2s}.modal.open>.box{transform:none}
+.noscroll{scrollbar-width:none}.noscroll::-webkit-scrollbar{display:none}
+.ph{background:radial-gradient(circle at 30% 20%,#3a2a12,#171717 70%)}
+.slot:disabled{opacity:.3;text-decoration:line-through;cursor:not-allowed}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #d97706;outline-offset:2px}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade-in-card {
+  animation: fadeInUp 0.5s ease forwards;
+}
+
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+background:
+ radial-gradient(ellipse at 50% -10%,rgba(217,119,6,.2),transparent 60%),
+ url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='440' height='440' fill='none' stroke='rgb(217,119,6)' stroke-opacity='.12' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><g transform='translate(40 40) rotate(-15)'><rect x='10' y='6' width='16' height='52' rx='8'/><path d='M10 18l16 8M10 34l16-8'/></g><g transform='translate(260 50) rotate(20)'><circle cx='10' cy='10' r='8'/><circle cx='10' cy='50' r='8'/><path d='M17 16L74 54M17 44L74 16'/></g><g transform='translate(160 180) rotate(30)'><path d='M10 8h24l-4 36H14z'/><circle cx='22' cy='22' r='4'/></g><g transform='translate(330 240) rotate(-25)'><rect x='6' y='12' width='36' height='14' rx='4'/><path d='M6 19h36'/></g><g transform='translate(50 310) rotate(10)'><circle cx='10' cy='10' r='8'/><circle cx='10' cy='50' r='8'/><path d='M17 16L74 54M17 44L74 16'/></g><g transform='translate(270 350) rotate(-10)'><rect x='10' y='6' width='16' height='52' rx='8'/><path d='M10 18l16 8M10 34l16-8'/></g></svg>");
+background-size:auto,440px 440px}
+section.bg-neutral-950,footer.bg-neutral-950{background:rgba(10,10,10,.72)}
+</style>
+</head>
+<body>
+
+<header class="sticky top-0 z-40 bg-neutral-900/95 backdrop-blur border-b border-neutral-800">
+  <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+    <a href="#topo" class="serif text-xl font-bold tracking-wide" id="logo">HAINT</a>
+    <nav class="hidden md:flex gap-6 text-sm text-neutral-300">
+      <a href="#catalogo" class="hover:text-amber-500">Serviços</a>
+      <a href="#barbeiro" class="hover:text-amber-500">Barbeiro</a>
+      <a href="#contato" class="hover:text-amber-500">Localização</a>
+    </nav>
+    <div class="flex items-center gap-2">
+      <button id="btnAdmin" class="px-3 py-2 text-xs font-semibold text-amber-500 hover:text-amber-400">🔧 Painel Admin</button>
+      <button id="btnMeus" class="relative px-3 py-2 text-xs font-medium text-neutral-300 hover:text-white">🕒 Meus horários <span id="badge" class="hidden ml-1 bg-amber-600 text-neutral-950 text-[10px] font-bold px-1.5 rounded-full">0</span></button>
+      <a href="#catalogo" class="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-neutral-950 text-sm font-bold rounded-full">Agendar</a>
+    </div>
+  </div>
+</header>
+
+<section id="topo" class="bg-neutral-950 border-b border-neutral-800">
+  <div class="max-w-6xl mx-auto px-4 py-16 sm:py-20 text-center space-y-5">
+    
+    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-neutral-900 border border-neutral-800 text-xs font-medium shadow-inner">
+      <span id="statusDot" class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+      <span id="statusText" class="text-neutral-300">Verificando horário...</span>
+    </div>
+
+    <span class="block text-xs tracking-widest uppercase text-amber-500 font-semibold">Barbearia em Aracati – CE</span>
+    <h1 class="serif text-4xl sm:text-6xl font-bold leading-tight">Corte, barba e estilo<br>do jeito que você quer.</h1>
+    <p class="text-neutral-400 max-w-xl mx-auto">Degradê preciso, navalhado, barba alinhada, luzes e tratamentos capilares. Escolha os serviços, o horário e confirme pelo WhatsApp.</p>
+    
+    <div class="flex flex-wrap gap-3 justify-center">
+      <a href="#catalogo" class="px-7 py-3 bg-amber-600 hover:bg-amber-500 text-neutral-950 font-bold rounded-full transition shadow-lg shadow-amber-600/20">Escolher serviço</a>
+      <a id="zapHero" target="_blank" rel="noopener" class="px-7 py-3 border border-neutral-700 hover:border-amber-500 rounded-full font-semibold transition">Falar no WhatsApp</a>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-2xl mx-auto pt-8">
+      <div class="flex items-center justify-center gap-2.5 px-4 py-3 rounded-2xl bg-neutral-900/60 border border-neutral-800/80 text-xs text-neutral-300">
+        <span class="text-amber-500 text-base">⚡</span> Hora marcada, sem fila
+      </div>
+      <div class="flex items-center justify-center gap-2.5 px-4 py-3 rounded-2xl bg-neutral-900/60 border border-neutral-800/80 text-xs text-neutral-300">
+        <span class="text-amber-500 text-base">🕒</span> Seg a Sáb, 9h às 20h
+      </div>
+      <div class="flex items-center justify-center gap-2.5 px-4 py-3 rounded-2xl bg-neutral-900/60 border border-neutral-800/80 text-xs text-neutral-300">
+        <span class="text-amber-500 text-base">💬</span> Confirmação via WhatsApp
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="sticky top-16 z-30 bg-neutral-900/95 backdrop-blur border-b border-neutral-800">
+  <div id="chips" class="max-w-6xl mx-auto px-4 py-3 flex gap-2 overflow-x-auto noscroll"></div>
+</div>
+
+<main id="catalogo" class="max-w-6xl mx-auto px-4 py-12 min-h-[50vh]">
+  <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+    <div>
+      <h2 class="serif text-3xl font-bold">Serviços e preços</h2>
+      <p class="text-sm text-neutral-400 mt-1">Selecione um ou mais serviços e agende o seu horário.</p>
+    </div>
+    <input id="busca" type="search" placeholder="Buscar (ex: fade, luzes, barba)" aria-label="Buscar serviço" class="w-full sm:w-72 px-4 py-2 text-sm bg-neutral-800 rounded-full border border-neutral-700 focus:border-amber-500">
+  </div>
+  <div id="grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+  <p id="vazio" class="hidden text-center py-16 text-neutral-400">Nenhum serviço encontrado.</p>
+</main>
+
+<!-- BARRA FLUTUANTE DE CARRINHO / SELEÇÃO DE SERVIÇOS -->
+<div id="barraCarrinho" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 hidden bg-neutral-900/95 backdrop-blur border border-amber-500/50 p-4 rounded-2xl shadow-2xl w-[92%] max-w-lg flex items-center justify-between gap-4">
+  <div>
+    <p class="text-xs text-amber-500 font-bold uppercase tracking-wider"><span id="carrinhoQtd">0</span> serviço(s) selecionado(s)</p>
+    <p id="carrinhoTotal" class="text-lg font-bold text-white">R$ 0,00</p>
+  </div>
+  <button id="btnAbrirAgendamento" class="px-5 py-2.5 bg-amber-600 hover:bg-amber-500 text-neutral-950 text-sm font-bold rounded-xl transition shadow-lg">
+    Avançar Agendamento
+  </button>
+</div>
+
+<section id="barbeiro" class="bg-neutral-950 border-t border-neutral-800 py-16">
+  <div class="max-w-sm mx-auto px-4 text-center space-y-3">
+    <div class="w-28 h-28 mx-auto rounded-full ph border-2 border-amber-500 flex items-center justify-center text-5xl shadow-lg">✂️</div>
+    <h2 class="serif text-2xl font-bold">Lucas</h2>
+    <p class="text-xs text-amber-500 font-medium">Barbeiro Profissional</p>
+    <p class="text-sm text-neutral-400">Especialista em degradês, cortes na tesoura, luzes e barbas alinhadas.</p>
+  </div>
+</section>
+
+<footer id="contato" class="bg-neutral-950 border-t border-neutral-800 text-sm text-neutral-400 py-12">
+  <div class="max-w-6xl mx-auto px-4 grid md:grid-cols-3 gap-8">
+    <div><span id="rodNome" class="serif text-xl text-white font-bold"></span><p class="mt-2">Estilo, praticidade e bom atendimento em Aracati.</p></div>
+    <div><h4 class="text-white font-semibold mb-2">Horário</h4><p>Segunda a sábado: 9h às 20h<br>Domingo: fechado</p></div>
+    <div><h4 class="text-white font-semibold mb-2">Contato</h4><p>Aracati – CE<br><a id="rodZap" target="_blank" rel="noopener" class="text-amber-500 hover:underline"></a></p></div>
+  </div>
+  <p class="max-w-6xl mx-auto px-4 mt-8 pt-6 border-t border-neutral-800 text-xs">© 2026 Haint. Todos os direitos reservados.</p>
+</footer>
+
+<a id="zapFlut" target="_blank" rel="noopener" aria-label="WhatsApp" class="fixed right-4 z-40 w-14 h-14 bg-emerald-600 hover:bg-emerald-500 rounded-full flex items-center justify-center text-2xl shadow-xl transition hover:scale-105" style="bottom:calc(1.25rem + env(safe-area-inset-bottom,0px))">💬</a>
+
+<!-- Modal Agendar -->
+<div id="mAg" class="modal fixed inset-0 z-50 bg-neutral-950/80 flex items-center justify-center p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label="Agendar">
+  <div class="box bg-neutral-900 border border-neutral-800 rounded-3xl max-w-md w-full p-6 max-h-[90vh] overflow-y-auto relative shadow-2xl">
+    <button data-close="mAg" aria-label="Fechar" class="absolute top-3 right-4 p-2 text-neutral-400 hover:text-white text-xl">✕</button>
+    <span class="text-[10px] uppercase font-semibold text-amber-500 tracking-wider">Resumo dos Serviços</span>
+    <div id="agListaServicos" class="space-y-1.5 my-2 max-h-32 overflow-y-auto pr-1"></div>
+    <p id="agTotal" class="text-base font-bold text-amber-500 mb-4 border-t border-neutral-800 pt-2"></p>
+    
+    <form id="form" class="space-y-4 text-sm border-t border-neutral-800 pt-3">
+      <div>
+        <label for="agData" class="block text-xs font-semibold text-neutral-300 mb-1">Data *</label>
+        <input id="agData" type="date" required class="w-full px-3 py-2.5 border border-neutral-700 rounded-xl bg-neutral-800 focus:border-amber-500">
+        <p id="agErro" class="text-xs text-red-400 mt-1 hidden"></p>
+      </div>
+      <div>
+        <span class="block text-xs font-semibold text-neutral-300 mb-1">Horário *</span>
+        <div id="slots" class="grid grid-cols-4 gap-2"></div>
+      </div>
+      <div>
+        <label for="agNomeCli" class="block text-xs font-semibold text-neutral-300 mb-1">Seu nome *</label>
+        <input id="agNomeCli" required minlength="2" autocomplete="name" class="w-full px-3 py-2.5 border border-neutral-700 rounded-xl bg-neutral-800 focus:border-amber-500">
+      </div>
+      <div>
+        <label for="agTel" class="block text-xs font-semibold text-neutral-300 mb-1">Seu WhatsApp *</label>
+        <input id="agTel" type="tel" required inputmode="numeric" autocomplete="tel" placeholder="(88) 99999-9999" class="w-full px-3 py-2.5 border border-neutral-700 rounded-xl bg-neutral-800 focus:border-amber-500">
+      </div>
+      <button class="w-full py-3 bg-amber-600 hover:bg-amber-500 text-neutral-950 font-bold rounded-xl transition shadow-lg">Confirmar pelo WhatsApp</button>
+      <p class="text-xs text-neutral-500 text-center">O horário só está garantido após a confirmação do Lucas.</p>
+    </form>
+  </div>
+</div>
+
+<!-- Meus horários -->
+<div id="mMeus" class="modal fixed inset-0 z-50 bg-neutral-950/80 flex items-center justify-center p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label="Meus horários">
+  <div class="box bg-neutral-900 border border-neutral-800 rounded-3xl max-w-lg w-full p-6 max-h-[85vh] overflow-y-auto relative shadow-2xl">
+    <button data-close="mMeus" aria-label="Fechar" class="absolute top-3 right-4 p-2 text-neutral-400 hover:text-white text-xl">✕</button>
+    <h3 class="serif text-xl font-bold mb-1">Meus horários</h3>
+    <p class="text-xs text-neutral-500 mb-4">Salvos apenas neste aparelho.</p>
+    <div id="lista" class="divide-y divide-neutral-800"></div>
+  </div>
+</div>
+
+<!-- Painel Admin do Lucas com Histórico e Abas -->
+<div id="mAdm" class="modal fixed inset-0 z-[60] bg-neutral-950/90 flex items-center justify-center p-4 backdrop-blur-md" role="dialog" aria-modal="true" aria-label="Painel do barbeiro">
+  <div class="box bg-neutral-900 border border-neutral-800 rounded-3xl max-w-2xl w-full p-6 max-h-[88vh] overflow-y-auto relative shadow-2xl">
+    <button data-close="mAdm" aria-label="Fechar" class="absolute top-3 right-4 p-2 text-neutral-400 hover:text-white text-xl">✕</button>
+    <h3 class="serif text-xl font-bold text-amber-500">Painel do Lucas</h3>
+    <p class="text-xs text-neutral-500 mb-3">Gerencie agendamentos e acompanhe seu histórico de atendimentos.</p>
+    
+    <div class="flex gap-2 mb-4 border-b border-neutral-800 pb-3">
+      <button id="tabPendentes" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-amber-600 text-neutral-950">Pendentes / Ativos</button>
+      <button id="tabHistorico" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-neutral-800 text-neutral-300 hover:text-white">Histórico / Concluídos</button>
+    </div>
+
+    <div id="admLista" class="divide-y divide-neutral-800"></div>
+  </div>
+</div>
+
+<div id="toast" role="status" class="fixed left-1/2 -translate-x-1/2 z-[70] hidden bg-neutral-800 border border-neutral-700 text-sm px-4 py-2.5 rounded-full shadow-xl" style="bottom:6rem"></div>
+
+<script>
+const CFG={nome:"HAINT",zap:"5511964258775",horas:["09:00","10:00","11:00","13:00","14:00","15:00","16:00","17:00","18:00","19:00"],senha:"1234"};
+const SERVICOS=[
+ {id:1,nome:"Low Fade com Volume Texturizado",cat:"Degradê & Fade",preco:35,tempo:"45min",tag:"Novidade",img:"image_7650c2.jpg"},
+ {id:2,nome:"Low Fade com Cachos Naturais",cat:"Degradê & Fade",preco:35,tempo:"45min",tag:"Em alta",img:"image_765086.jpg"},
+ {id:3,nome:"French Crop + Mid Fade",cat:"Degradê & Fade",preco:35,tempo:"40min",tag:"Mais pedido"},
+ {id:4,nome:"High Fade com Topete",cat:"Degradê & Fade",preco:40,tempo:"45min"},
+ {id:5,nome:"Buzz Cut + Disfarce",cat:"Cortes curtos",preco:30,tempo:"30min",tag:"Prático"},
+ {id:6,nome:"Corte Social na Tesoura",cat:"Cortes curtos",preco:35,tempo:"35min"},
+ {id:7,nome:"Quiff com Pomada",cat:"Cortes médios",preco:40,tempo:"45min",tag:"Clássico"},
+ {id:8,nome:"Mullet Texturizado",cat:"Cortes médios",preco:40,tempo:"45min"},
+ {id:9,nome:"Slick Back",cat:"Cortes médios",preco:40,tempo:"40min"},
+ {id:10,nome:"Afro Taper Fade",cat:"Cacheados",preco:40,tempo:"50min"},
+ {id:11,nome:"Cacheado Natural + Skin Fade",cat:"Cacheados",preco:45,tempo:"50min",tag:"Em alta"},
+ {id:12,nome:"Barba na Toalha Quente",cat:"Barba & Combo",preco:30,tempo:"30min"},
+ {id:13,nome:"Combo: Corte + Barba",cat:"Barba & Combo",preco:60,tempo:"1h10",tag:"Destaque"},
+ {id:14,nome:"Luzes / Reflexo Masculino",cat:"Química & Coloração",preco:60,tempo:"1h",tag:"Em alta"},
+ {id:15,nome:"Platinado Global",cat:"Química & Coloração",preco:90,tempo:"1h30",tag:"Destaque"},
+ {id:16,nome:"Pintura / Tintura Capilar",cat:"Química & Coloração",preco:45,tempo:"45min"},
+ {id:17,nome:"Pigmentação (Barba ou Cabelo)",cat:"Barba & Combo",preco:25,tempo:"20min"},
+ {id:18,nome:"Hidratação Capilar Profunda",cat:"Tratamentos",preco:30,tempo:"25min"}
+];
+
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const brl=v=>v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+const KEY='haint_agendamentos_v1';
+let ags=[];try{ags=JSON.parse(localStorage.getItem(KEY))||[]}catch{}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(ags))}catch{}};
+let cat='Todos',termo='',hora='';
+let carrinho = [];
+let abaAdminAtual = 'pendentes';
+
+const CATS=['Todos',...new Set(SERVICOS.map(s=>s.cat))];
+const iso=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const br=i=>i.split('-').reverse().join('/');
+const zapUrl=t=>`https://wa.me/${CFG.zap}?text=${encodeURIComponent(t)}`;
+
+function gerarLinkGoogleAgenda(item){
+  const dataInicio = item.dataISO.replace(/-/g, '');
+  const horaPartes = item.hora.split(':');
+  const hInicio = horaPartes[0].padStart(2, '0');
+  const mInicio = horaPartes[1].padStart(2, '0');
+  const hFim = String(parseInt(hInicio) + 1).padStart(2, '0');
+  
+  const start = `${dataInicio}T${hInicio}${mInicio}00`;
+  const end = `${dataInicio}T${hFim}${mInicio}00`;
+  
+  const titulo = encodeURIComponent(`Corte na Barbearia Haint (${item.servico})`);
+  const detalhes = encodeURIComponent(`Agendamento confirmado na Haint com o barbeiro Lucas.\nServiço: ${item.servico}\nValor: ${item.preco}`);
+  const local = encodeURIComponent('Barbearia Haint - Aracati, CE');
+  
+  return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${titulo}&dates=${start}/${end}&details=${detalhes}&location=${local}`;
+}
+
+function verificarStatusBarbearia(){
+  const agora = new Date();
+  const dia = agora.getDay();
+  const hora = agora.getHours();
+  const dot = $('statusDot');
+  const txt = $('statusText');
+
+  if(!dot || !txt) return;
+
+  if(dia === 0 || hora < 9 || hora >= 20){
+    dot.className = "w-2.5 h-2.5 rounded-full bg-red-500";
+    txt.textContent = dia === 0 ? "Fechado hoje (Domingo)" : "Fechado no momento • Abre às 09h";
+  } else {
+    dot.className = "w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse";
+    txt.textContent = "🟢 Aberto agora • Atendimento até às 20h";
+  }
+}
+setInterval(verificarStatusBarbearia, 60000);
+
+function toast(m){const t=$('toast');t.textContent=m;t.classList.remove('hidden');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.add('hidden'),2800)}
+let foco=null;
+const abrir=id=>{foco=document.activeElement;$(id).classList.add('open')};
+const fechar=id=>{$(id).classList.remove('open');foco&&foco.focus&&foco.focus()};
+document.addEventListener('click',e=>{const c=e.target.closest('[data-close]');if(c)fechar(c.dataset.close);if(e.target.classList.contains('modal'))fechar(e.target.id)});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.modal.open').forEach(m=>fechar(m.id))});
+
+function config(){
+  $('logo').textContent=CFG.nome;$('rodNome').textContent=CFG.nome;
+  const d=CFG.zap.replace(/^55/,'');
+  $('rodZap').textContent=`(${d.slice(0,2)}) ${d.slice(2,-4)}-${d.slice(-4)}`;
+  const u=zapUrl(`Olá Lucas! Gostaria de agendar um horário na ${CFG.nome}.`);
+  ['zapHero','zapFlut','rodZap'].forEach(i=>$(i).href=u);
+  verificarStatusBarbearia();
+}
+function chips(){
+  $('chips').innerHTML=CATS.map(c=>`<button data-cat="${esc(c)}" class="shrink-0 px-4 py-2 rounded-full text-sm border whitespace-nowrap transition ${c===cat?'bg-amber-600 text-neutral-950 font-bold border-amber-600 shadow-md':'bg-neutral-800 text-neutral-300 border-neutral-700 hover:border-amber-500'}">${esc(c)}</button>`).join('');
+}
+$('chips').addEventListener('click',e=>{const b=e.target.closest('[data-cat]');if(b){cat=b.dataset.cat;chips();grid()}});
+$('busca').addEventListener('input',e=>{termo=e.target.value.toLowerCase().trim();grid()});
+
+function grid(){
+  const l=SERVICOS.filter(s=>(cat==='Todos'||s.cat===cat)&&(!termo||(s.nome+' '+s.cat).toLowerCase().includes(termo)));
+  $('vazio').classList.toggle('hidden',l.length>0);
+  $('grid').innerHTML=l.map((s, idx)=>{
+    const selecionado = carrinho.some(item => item.id === s.id);
+    return `
+    <article class="bg-neutral-900 border ${selecionado?'border-amber-500 ring-2 ring-amber-500/30':'border-neutral-800'} rounded-3xl overflow-hidden flex flex-col transition fade-in-card" style="animation-delay: ${idx * 0.05}s">
+      ${s.img?`<img src="${esc(s.img)}" alt="${esc(s.nome)}" loading="lazy" class="w-full aspect-[16/9] object-cover">`:`<div class="ph aspect-[16/9] flex items-center justify-center text-4xl relative">✂️${s.tag?`<span class="absolute top-3 left-3 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-600 text-neutral-950 shadow">${esc(s.tag)}</span>`:''}</div>`}
+      <div class="p-5 flex-1 flex flex-col justify-between gap-4">
+        <div>
+          <span class="text-[11px] uppercase tracking-wider text-amber-500 font-semibold">${esc(s.cat)} · ${esc(s.tempo)}</span>
+          <h3 class="serif text-lg font-bold mt-1">${esc(s.nome)}</h3>
+          <p class="text-xl font-bold text-amber-500 mt-1">${brl(s.preco)}</p>
+        </div>
+        <button data-toggle="${s.id}" class="w-full py-2.5 ${selecionado?'bg-amber-600 text-neutral-950 font-bold':'bg-neutral-800 hover:bg-amber-600 hover:text-neutral-950 text-white font-semibold'} rounded-xl transition">
+          ${selecionado ? '✓ Adicionado ao Agendamento' : '+ Adicionar Serviço'}
+        </button>
+      </div>
+    </article>`;
+  }).join('');
+}
+
+$('grid').addEventListener('click',e=>{
+  const b=e.target.closest('[data-toggle]');
+  if(b){
+    const id = +b.dataset.toggle;
+    const idx = carrinho.findIndex(item => item.id === id);
+    if(idx >= 0){
+      carrinho.splice(idx, 1);
+      toast('Serviço removido');
+    } else {
+      const serv = SERVICOS.find(s => s.id === id);
+      if(serv) carrinho.push(serv);
+      toast('Serviço adicionado! ✓');
+    }
+    atualizarBarraCarrinho();
+    grid();
+  }
+});
+
+function atualizarBarraCarrinho(){
+  const barra = $('barraCarrinho');
+  if(carrinho.length > 0){
+    const total = carrinho.reduce((acc, curr) => acc + curr.preco, 0);
+    $('carrinhoQtd').textContent = carrinho.length;
+    $('carrinhoTotal').textContent = brl(total);
+    barra.classList.remove('hidden');
+  } else {
+    barra.classList.add('hidden');
+  }
+}
+
+$('btnAbrirAgendamento').onclick = () => {
+  if(!carrinho.length) return toast('Selecione ao menos 1 serviço');
+  const total = carrinho.reduce((acc, curr) => acc + curr.preco, 0);
+  $('agListaServicos').innerHTML = carrinho.map(s => `
+    <div class="flex justify-between items-center text-xs border-b border-neutral-800/80 py-1">
+      <span class="text-white font-medium">${esc(s.nome)}</span>
+      <span class="text-amber-500 font-bold">${brl(s.preco)}</span>
+    </div>
+  `).join('');
+  $('agTotal').textContent = `Total: ${brl(total)}`;
+
+  const h=new Date();let d=iso(h);
+  if(h.getDay()===0||h.getHours()>=19){const n=new Date(h);n.setDate(n.getDate()+1);if(n.getDay()===0)n.setDate(n.getDate()+1);d=iso(n)}
+  $('agData').min=iso(h);$('agData').value=d;slots();abrir('mAg');
+};
+
+let db=null,taken={};
+const sk=(d,h)=>d+'_'+h.replace(':','');
+function ocupado(d,h){return !!taken[sk(d,h)]||ags.some(a=>a.dataISO===d&&a.hora===h&&a.status!=='Cancelado'&&a.status!=='Recusado')}
+function stTag(s){
+  if(s==='Confirmado')return '<span class="text-emerald-400 font-bold">Confirmado ✓</span>';
+  if(s==='Recusado'||s==='Cancelado')return `<span class="text-red-400 font-bold">${s}</span>`;
+  return '<span class="text-amber-400 font-bold">Pendente ⏳</span>';
+}
+
+function slots(){
+  const d=$('agData').value,erro=$('agErro');hora='';
+  erro.classList.add('hidden');
+  if(!d){$('slots').innerHTML='';return}
+  const dt=new Date(d+'T12:00:00');
+  if(dt.getDay()===0){erro.textContent='Domingo estamos fechados. Escolha outro dia.';erro.classList.remove('hidden');$('slots').innerHTML='';return}
+  const agora=new Date(),hoje=iso(agora);
+  $('slots').innerHTML=CFG.horas.map(h=>{
+    const passou=d===hoje&&parseInt(h)<=agora.getHours();
+    return `<button type="button" class="slot py-2 rounded-lg border border-neutral-700 bg-neutral-800 text-sm hover:border-amber-500 transition" data-h="${h}" ${passou||ocupado(d,h)?'disabled':''}>${h}</button>`;
+  }).join('');
+  if(![...$('slots').children].some(b=>!b.disabled)){erro.textContent='Sem horários livres neste dia. Tente outra data.';erro.classList.remove('hidden')}
+}
+$('slots').addEventListener('click',e=>{
+  const b=e.target.closest('[data-h]');if(!b||b.disabled)return;
+  hora=b.dataset.h;
+  [...$('slots').children].forEach(x=>x.className=x.className.replace(/ ?(bg-amber-600 text-neutral-950 font-bold)/g,'')+(x===b?' bg-amber-600 text-neutral-950 font-bold':''));
+});
+$('agData').addEventListener('change',slots);
+$('agTel').addEventListener('input',e=>{
+  let v=e.target.value.replace(/\D/g,'').slice(0,11);
+  e.target.value=v.length>6?`(${v.slice(0,2)}) ${v.slice(2,v.length>10?7:6)}-${v.slice(v.length>10?7:6)}`:v.length>2?`(${v.slice(0,2)}) ${v.slice(2)}`:v;
+});
+
+$('form').addEventListener('submit',e=>{
+  e.preventDefault();
+  const d=$('agData').value,nome=$('agNomeCli').value.trim(),tel=$('agTel').value.trim();
+  if(!hora)return toast('Escolha um horário');
+  if(new Date(d+'T12:00:00').getDay()===0)return toast('Domingo fechado');
+  if(tel.replace(/\D/g,'').length<10)return toast('Confira o número de WhatsApp');
+  if(ocupado(d,hora))return toast('Esse horário acabou de ser reservado');
+
+  const nomesServicos = carrinho.map(s => s.nome).join(' + ');
+  const valorTotal = brl(carrinho.reduce((acc, curr) => acc + curr.preco, 0));
+
+  const a={id:'HC-'+Date.now().toString(36).toUpperCase().slice(-5),servico:nomesServicos,preco:valorTotal,dataISO:d,hora,cliente:nome,tel,status:'Pendente'};
+  ags.unshift(a);save();badge();
+
+  const msg=`*Pedido de agendamento* (${a.id})\n*Serviços:* ${nomesServicos}\n*Total:* ${valorTotal}\n*Data:* ${br(d)} às ${hora}\n*Nome:* ${nome}\n*WhatsApp:* ${tel}\n\nAguardo a confirmação, Lucas!`;
+  fechar('mAg');e.target.reset();
+  carrinho = [];
+  atualizarBarraCarrinho();
+  grid();
+
+  window.open(zapUrl(msg),'_blank','noopener');
+  toast('Pedido enviado. Aguarde a confirmação no WhatsApp ✓');
+});
+
+function badge(){const n=ags.filter(a=>a.status!=='Cancelado').length,b=$('badge');b.textContent=n;b.classList.toggle('hidden',!n)}
+$('btnMeus').onclick=()=>{lista();abrir('mMeus')};
+
+function lista(){
+  $('lista').innerHTML=ags.length?ags.map(a=>`
+  <div class="py-3.5 space-y-2 text-xs">
+    <div class="flex justify-between gap-2 font-semibold">
+      <span>${esc(a.id)} · ${esc(a.servico)}</span>
+      ${stTag(a.status)}
+    </div>
+    <p class="text-neutral-300">📅 ${br(a.dataISO)} às ${a.hora} · ${esc(a.preco)}</p>
+    <div class="flex items-center gap-3 pt-1">
+      <a href="${gerarLinkGoogleAgenda(a)}" target="_blank" rel="noopener" class="inline-flex items-center gap-1 text-amber-500 hover:underline font-medium">
+        📅 Adicionar ao Google Agenda
+      </a>
+      ${a.status!=='Cancelado'?`<button data-cancel="${esc(a.id)}" class="text-red-400 hover:underline">Cancelar horário</button>`:''}
+    </div>
+  </div>`).join(''):`<p class="text-center text-neutral-400 py-10 text-sm">Nenhum horário neste aparelho.</p>`;
+}
+
+$('lista').addEventListener('click',e=>{
+  const b=e.target.closest('[data-cancel]');if(!b)return;
+  const a=ags.find(x=>x.id===b.dataset.cancel);
+  if(a&&confirm('Cancelar este horário?')){
+    a.status='Cancelado';save();badge();lista();
+    window.open(zapUrl(`Olá Lucas! Preciso cancelar o agendamento ${a.id} (${a.servico}) de ${br(a.dataISO)} às ${a.hora}.`),'_blank','noopener');
+  }
+});
+
+function renderAdmin(){
+  const cont=$('admLista');
+  let listaFiltrada = [];
+
+  if(abaAdminAtual === 'pendentes'){
+    listaFiltrada = ags.filter(a => a.status === 'Pendente' || a.status === 'Aguardando');
+  } else {
+    listaFiltrada = ags.filter(a => a.status === 'Confirmado' || a.status === 'Recusado' || a.status === 'Cancelado');
+  }
+
+  if(!listaFiltrada.length){
+    cont.innerHTML=`<p class="text-center text-neutral-400 py-8 text-sm">Nenhum agendamento ${abaAdminAtual === 'pendentes' ? 'pendente' : 'no histórico'}.</p>`;
+    return;
+  }
+
+  cont.innerHTML=listaFiltrada.map(p=>`
+    <div class="py-3 text-xs space-y-1 border-b border-neutral-800">
+      <div class="flex justify-between items-center font-semibold">
+        <span>${esc(p.id)} · ${esc(p.servico)}</span>
+        <span>${stTag(p.status)}</span>
+      </div>
+      <p class="text-neutral-300">📅 <strong>${br(p.dataISO)}</strong> às <strong>${esc(p.hora)}h</strong> · Cliente: <strong>${esc(p.cliente)}</strong> (${esc(p.tel)})</p>
+      <div class="flex gap-2 pt-2">
+        ${p.status !== 'Confirmado' ? `<button onclick="alterarStatusAdmin('${p.id}', 'Confirmado')" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-bold transition">Confirmar Horário (Enviar Zap)</button>` : ''}
+        ${p.status !== 'Recusado' ? `<button onclick="alterarStatusAdmin('${p.id}', 'Recusado')" class="px-3 py-1.5 bg-red-600/80 hover:bg-red-600 text-white rounded-lg font-semibold transition">Recusar</button>` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+$('tabPendentes').onclick = () => {
+  abaAdminAtual = 'pendentes';
+  $('tabPendentes').className = "px-3.5 py-1.5 rounded-lg text-xs font-bold bg-amber-600 text-neutral-950";
+  $('tabHistorico').className = "px-3.5 py-1.5 rounded-lg text-xs font-bold bg-neutral-800 text-neutral-300 hover:text-white";
+  renderAdmin();
+};
+
+$('tabHistorico').onclick = () => {
+  abaAdminAtual = 'historico';
+  $('tabHistorico').className = "px-3.5 py-1.5 rounded-lg text-xs font-bold bg-amber-600 text-neutral-950";
+  $('tabPendentes').className = "px-3.5 py-1.5 rounded-lg text-xs font-bold bg-neutral-800 text-neutral-300 hover:text-white";
+  renderAdmin();
+};
+
+function alterarStatusAdmin(id, novoStatus){
+  const item = ags.find(a => a.id === id);
+  if(!item) return;
+  item.status = novoStatus;
+  save();
+  renderAdmin();
+  toast(`Agendamento ${novoStatus.toLowerCase()} ✓`);
+
+  const limpo = item.tel.replace(/\D/g, '');
+  if(limpo){
+    const fone = limpo.startsWith('55') ? limpo : '55' + limpo;
+    let msg = '';
+    if(novoStatus === 'Confirmado'){
+      msg = `Fala ${item.cliente}, aqui é o Lucas da ${CFG.nome}! Seu agendamento para *${item.servico}* (Total: ${item.preco}) no dia *${br(item.dataISO)} às ${item.hora}* foi *CONFIRMADO*! Te aguardo aqui na barbearia. ✂️🔥`;
+    } else {
+      msg = `Olá ${item.cliente}, aqui é o Lucas da ${CFG.nome}. Infelizmente não consegui vaga para o horário do dia *${br(item.dataISO)} às ${item.hora}*. Podemos remarcar para outro momento?`;
+    }
+    window.open(`https://wa.me/${fone}?text=${encodeURIComponent(msg)}`, '_blank');
+  }
+}
+
+function abrirAdminComSenha(){
+  const pass = prompt('Digite a senha de acesso ao Painel Admin:');
+  if(pass === CFG.senha){
+    renderAdmin();
+    abrir('mAdm');
+  } else if(pass !== null) {
+    alert('Senha incorreta!');
+  }
+}
+
+$('btnAdmin').onclick = abrirAdminComSenha;
+window.addEventListener('hashchange',()=>{if(window.location.hash==='#admin'){abrirAdminComSenha();window.location.hash='';}});
+if(window.location.hash==='#admin'){abrirAdminComSenha();window.location.hash='';}
+
+config();chips();grid();badge();
+</script>
+</body>
+</html>
