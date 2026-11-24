@@ -7,6 +7,7 @@
 <meta name="description" content="Cortes masculinos, degradês e barba em Aracati - CE. Agende com o barbeiro Lucas pelo WhatsApp.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✂️</text></svg>">
 <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
 <style>
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:dark}
@@ -30,8 +31,8 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #d977
 
 body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
 background:
- radial-gradient(ellipse at 50% -10%,rgba(217,119,6,.2),transparent 60%),
- url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='440' height='440' fill='none' stroke='rgb(217,119,6)' stroke-opacity='.12' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><g transform='translate(40 40) rotate(-15)'><rect x='10' y='6' width='16' height='52' rx='8'/><path d='M10 18l16 8M10 34l16-8'/></g><g transform='translate(260 50) rotate(20)'><circle cx='10' cy='10' r='8'/><circle cx='10' cy='50' r='8'/><path d='M17 16L74 54M17 44L74 16'/></g><g transform='translate(160 180) rotate(30)'><path d='M10 8h24l-4 36H14z'/><circle cx='22' cy='22' r='4'/></g><g transform='translate(330 240) rotate(-25)'><rect x='6' y='12' width='36' height='14' rx='4'/><path d='M6 19h36'/></g><g transform='translate(50 310) rotate(10)'><circle cx='10' cy='10' r='8'/><circle cx='10' cy='50' r='8'/><path d='M17 16L74 54M17 44L74 16'/></g><g transform='translate(270 350) rotate(-10)'><rect x='10' y='6' width='16' height='52' rx='8'/><path d='M10 18l16 8M10 34l16-8'/></g></svg>");
+  radial-gradient(ellipse at 50% -10%,rgba(217,119,6,.2),transparent 60%),
+  url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='440' height='440' fill='none' stroke='rgb(217,119,6)' stroke-opacity='.12' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><g transform='translate(40 40) rotate(-15)'><rect x='10' y='6' width='16' height='52' rx='8'/><path d='M10 18l16 8M10 34l16-8'/></g><g transform='translate(260 50) rotate(20)'><circle cx='10' cy='10' r='8'/><circle cx='10' cy='50' r='8'/><path d='M17 16L74 54M17 44L74 16'/></g><g transform='translate(160 180) rotate(30)'><path d='M10 8h24l-4 36H14z'/><circle cx='22' cy='22' r='4'/></g><g transform='translate(330 240) rotate(-25)'><rect x='6' y='12' width='36' height='14' rx='4'/><path d='M6 19h36'/></g><g transform='translate(50 310) rotate(10)'><circle cx='10' cy='10' r='8'/><circle cx='10' cy='50' r='8'/><path d='M17 16L74 54M17 44L74 16'/></g><g transform='translate(270 350) rotate(-10)'><rect x='10' y='6' width='16' height='52' rx='8'/><path d='M10 18l16 8M10 34l16-8'/></g></svg>");
 background-size:auto,440px 440px}
 section.bg-neutral-950,footer.bg-neutral-950{background:rgba(10,10,10,.72)}
 </style>
@@ -170,7 +171,7 @@ section.bg-neutral-950,footer.bg-neutral-950{background:rgba(10,10,10,.72)}
   <div class="box bg-neutral-900 border border-neutral-800 rounded-3xl max-w-lg w-full p-6 max-h-[85vh] overflow-y-auto relative shadow-2xl">
     <button data-close="mMeus" aria-label="Fechar" class="absolute top-3 right-4 p-2 text-neutral-400 hover:text-white text-xl">✕</button>
     <h3 class="serif text-xl font-bold mb-1">Meus horários</h3>
-    <p class="text-xs text-neutral-500 mb-4">Salvos apenas neste aparelho.</p>
+    <p class="text-xs text-neutral-500 mb-4">Salvos neste aparelho e sincronizados com o sistema.</p>
     <div id="lista" class="divide-y divide-neutral-800"></div>
   </div>
 </div>
@@ -194,26 +195,35 @@ section.bg-neutral-950,footer.bg-neutral-950{background:rgba(10,10,10,.72)}
 <div id="toast" role="status" class="fixed left-1/2 -translate-x-1/2 z-[70] hidden bg-neutral-800 border border-neutral-700 text-sm px-4 py-2.5 rounded-full shadow-xl" style="bottom:6rem"></div>
 
 <script>
-const CFG={nome:"HAINT",zap:"5511964258775",horas:["09:00","10:00","11:00","13:00","14:00","15:00","16:00","17:00","18:00","19:00"],senha:"1234"};
+const CFG = {
+  nome: "HAINT",
+  zap: "5511964258775",
+  horas: ["09:00","10:00","11:00","13:00","14:00","15:00","16:00","17:00","18:00","19:00"],
+  senha: "1234",
+  supabaseUrl: "https://vlfoeebwbiggnibqatgp.supabase.co",
+  supabaseAnonKey: "sb_publishable_33H_szW1Brw2JBkUMfJFyA_lL4PC-hZ",
+  webhookUrl: ""
+};
+
 const SERVICOS=[
- {id:1,nome:"Low Fade com Volume Texturizado",cat:"Degradê & Fade",preco:35,tempo:"45min",tag:"Novidade",img:"image_7650c2.jpg"},
- {id:2,nome:"Low Fade com Cachos Naturais",cat:"Degradê & Fade",preco:35,tempo:"45min",tag:"Em alta",img:"image_765086.jpg"},
- {id:3,nome:"French Crop + Mid Fade",cat:"Degradê & Fade",preco:35,tempo:"40min",tag:"Mais pedido"},
- {id:4,nome:"High Fade com Topete",cat:"Degradê & Fade",preco:40,tempo:"45min"},
- {id:5,nome:"Buzz Cut + Disfarce",cat:"Cortes curtos",preco:30,tempo:"30min",tag:"Prático"},
- {id:6,nome:"Corte Social na Tesoura",cat:"Cortes curtos",preco:35,tempo:"35min"},
- {id:7,nome:"Quiff com Pomada",cat:"Cortes médios",preco:40,tempo:"45min",tag:"Clássico"},
- {id:8,nome:"Mullet Texturizado",cat:"Cortes médios",preco:40,tempo:"45min"},
- {id:9,nome:"Slick Back",cat:"Cortes médios",preco:40,tempo:"40min"},
- {id:10,nome:"Afro Taper Fade",cat:"Cacheados",preco:40,tempo:"50min"},
- {id:11,nome:"Cacheado Natural + Skin Fade",cat:"Cacheados",preco:45,tempo:"50min",tag:"Em alta"},
- {id:12,nome:"Barba na Toalha Quente",cat:"Barba & Combo",preco:30,tempo:"30min"},
- {id:13,nome:"Combo: Corte + Barba",cat:"Barba & Combo",preco:60,tempo:"1h10",tag:"Destaque"},
- {id:14,nome:"Luzes / Reflexo Masculino",cat:"Química & Coloração",preco:60,tempo:"1h",tag:"Em alta"},
- {id:15,nome:"Platinado Global",cat:"Química & Coloração",preco:90,tempo:"1h30",tag:"Destaque"},
- {id:16,nome:"Pintura / Tintura Capilar",cat:"Química & Coloração",preco:45,tempo:"45min"},
- {id:17,nome:"Pigmentação (Barba ou Cabelo)",cat:"Barba & Combo",preco:25,tempo:"20min"},
- {id:18,nome:"Hidratação Capilar Profunda",cat:"Tratamentos",preco:30,tempo:"25min"}
+  {id:1,nome:"Low Fade com Volume Texturizado",cat:"Degradê & Fade",preco:35,tempo:"45min",tag:"Novidade",img:"img/low_fade_com_volumes_texturizados.webp"},
+  {id:2,nome:"Low Fade com Cachos Naturais",cat:"Degradê & Fade",preco:35,tempo:"45min",tag:"Em alta",img:"img/low-fade_cacheado.webp"},
+  {id:3,nome:"French Crop + Mid Fade",cat:"Degradê & Fade",preco:35,tempo:"40min",tag:"Mais pedido",img:"img/French_Crop___Mid_Fade.webp"},
+  {id:4,nome:"High Fade com Topete",cat:"Degradê & Fade",preco:40,tempo:"45min",tag:"Prático",img:"img/High_Fade_com_Topete.webp"},
+  {id:5,nome:"Buzz Cut + Disfarce",cat:"Cortes curtos",preco:30,tempo:"30min",tag:"Prático",img:"img/Buzz_Cut___Disfarce.webp"},
+  {id:6,nome:"Corte Social na Tesoura",cat:"Cortes curtos",preco:35,tempo:"35min"},
+  {id:7,nome:"Quiff com Pomada",cat:"Cortes médios",preco:40,tempo:"45min",tag:"Clássico"},
+  {id:8,nome:"Mullet Texturizado",cat:"Cortes médios",preco:40,tempo:"45min"},
+  {id:9,nome:"Slick Back",cat:"Cortes médios",preco:40,tempo:"40min"},
+  {id:10,nome:"Afro Taper Fade",cat:"Cacheados",preco:40,tempo:"50min"},
+  {id:11,nome:"Cacheado Natural + Skin Fade",cat:"Cacheados",preco:45,tempo:"50min",tag:"Em alta"},
+  {id:12,nome:"Barba na Toalha Quente",cat:"Barba & Combo",preco:30,tempo:"30min"},
+  {id:13,nome:"Combo: Corte + Barba",cat:"Barba & Combo",preco:60,tempo:"1h10",tag:"Destaque"},
+  {id:14,nome:"Luzes / Reflexo Masculino",cat:"Química & Coloração",preco:60,tempo:"1h",tag:"Em alta"},
+  {id:15,nome:"Platinado Global",cat:"Química & Coloração",preco:90,tempo:"1h30",tag:"Destaque"},
+  {id:16,nome:"Pintura / Tintura Capilar",cat:"Química & Coloração",preco:45,tempo:"45min"},
+  {id:17,nome:"Pigmentação (Barba ou Cabelo)",cat:"Barba & Combo",preco:25,tempo:"20min"},
+  {id:18,nome:"Hidratação Capilar Profunda",cat:"Tratamentos",preco:30,tempo:"25min"}
 ];
 
 const $=id=>document.getElementById(id);
@@ -225,6 +235,122 @@ const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(ags))}catch{}};
 let cat='Todos',termo='',hora='';
 let carrinho = [];
 let abaAdminAtual = 'pendentes';
+let db = null, taken = {};
+
+function iniciarSupabase(){
+  if(!window.supabase || !CFG.supabaseUrl || !CFG.supabaseAnonKey) return;
+  try{
+    db = window.supabase.createClient(CFG.supabaseUrl, CFG.supabaseAnonKey);
+  }catch(err){
+    console.warn("Erro ao iniciar Supabase:", err);
+    db = null;
+  }
+}
+
+async function dispararAutomacao(evento, payload){
+  if(!CFG.webhookUrl) return;
+  try{
+    await fetch(CFG.webhookUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ evento, origem: "haint_site", enviado_em: new Date().toISOString(), dados: payload })
+    });
+  }catch(err){
+    console.warn("Falha ao enviar webhook de automação:", err);
+  }
+}
+
+async function salvarAgendamentoNoBanco(item, valorNumerico){
+  if(!db) return;
+  const horaFormatada = item.hora.length === 5 ? `${item.hora}:00` : item.hora;
+  const { error } = await db.from("agendamentos").insert([{
+    cliente_nome: item.cliente,
+    cliente_whatsapp: item.tel,
+    servico_nome: `${item.servico} [${item.id}]`,
+    barbeiro: "Lucas",
+    data_agendamento: item.dataISO,
+    horario: horaFormatada,
+    valor_total: valorNumerico,
+    status: "pendente",
+    lembrete_enviado: false
+  }]);
+  if(error) console.warn("Erro ao salvar no Supabase:", error.message);
+}
+
+async function atualizarStatusNoBanco(item, novoStatus){
+  if(!db) return;
+  const statusBanco = novoStatus === "Confirmado" ? "confirmado" : "cancelado";
+  const horaFormatada = item.hora.length === 5 ? `${item.hora}:00` : item.hora;
+  const { error } = await db
+    .from("agendamentos")
+    .update({ status: statusBanco })
+    .eq("data_agendamento", item.dataISO)
+    .eq("horario", horaFormatada)
+    .eq("cliente_whatsapp", item.tel);
+  if(error) console.warn("Erro ao atualizar status no Supabase:", error.message);
+}
+
+async function carregarHorariosOcupados(dataISO){
+  taken = {};
+  if(!db || !dataISO) return;
+  try{
+    const { data, error } = await db
+      .from("agendamentos")
+      .select("horario, status")
+      .eq("data_agendamento", dataISO)
+      .neq("status", "cancelado");
+    if(!error && Array.isArray(data)){
+      data.forEach(row => {
+        if(row.horario){
+          const hhmm = String(row.horario).slice(0, 5);
+          taken[sk(dataISO, hhmm)] = true;
+        }
+      });
+    }
+  }catch(err){
+    console.warn("Erro ao consultar horários no Supabase:", err);
+  }
+}
+
+async function carregarAgendamentosAdmin(){
+  if(!db) return;
+  try{
+    const { data, error } = await db
+      .from("agendamentos")
+      .select("*")
+      .order("criado_em", { ascending: false })
+      .limit(100);
+    if(!error && Array.isArray(data)){
+      const remotos = data.map(r => {
+        const matchId = String(r.servico_nome || "").match(/\[(HC-[A-Z0-9]+)\]/);
+        const idGerado = matchId ? matchId[1] : String(r.id).slice(0, 7).toUpperCase();
+        const servLimpo = String(r.servico_nome || "").replace(/\s*\[HC-[A-Z0-9]+\]$/, "");
+        let st = "Pendente";
+        if(r.status === "confirmado" || r.status === "concluido") st = "Confirmado";
+        else if(r.status === "cancelado") st = "Cancelado";
+        return {
+          id: idGerado,
+          servico: servLimpo,
+          preco: brl(Number(r.valor_total || 0)),
+          dataISO: r.data_agendamento,
+          hora: String(r.horario || "09:00").slice(0, 5),
+          cliente: r.cliente_nome,
+          tel: r.cliente_whatsapp,
+          status: st
+        };
+      });
+
+      const mapa = new Map();
+      remotos.forEach(x => mapa.set(x.id, x));
+      ags.forEach(x => { if(!mapa.has(x.id)) mapa.set(x.id, x); });
+      ags = Array.from(mapa.values());
+      save();
+      badge();
+    }
+  }catch(err){
+    console.warn("Erro ao carregar agendamentos no admin:", err);
+  }
+}
 
 const CATS=['Todos',...new Set(SERVICOS.map(s=>s.cat))];
 const iso=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
@@ -340,7 +466,7 @@ function atualizarBarraCarrinho(){
   }
 }
 
-$('btnAbrirAgendamento').onclick = () => {
+$('btnAbrirAgendamento').onclick = async () => {
   if(!carrinho.length) return toast('Selecione ao menos 1 serviço');
   const total = carrinho.reduce((acc, curr) => acc + curr.preco, 0);
   $('agListaServicos').innerHTML = carrinho.map(s => `
@@ -353,10 +479,11 @@ $('btnAbrirAgendamento').onclick = () => {
 
   const h=new Date();let d=iso(h);
   if(h.getDay()===0||h.getHours()>=19){const n=new Date(h);n.setDate(n.getDate()+1);if(n.getDay()===0)n.setDate(n.getDate()+1);d=iso(n)}
-  $('agData').min=iso(h);$('agData').value=d;slots();abrir('mAg');
+  $('agData').min=iso(h);$('agData').value=d;
+  await slots();
+  abrir('mAg');
 };
 
-let db=null,taken={};
 const sk=(d,h)=>d+'_'+h.replace(':','');
 function ocupado(d,h){return !!taken[sk(d,h)]||ags.some(a=>a.dataISO===d&&a.hora===h&&a.status!=='Cancelado'&&a.status!=='Recusado')}
 function stTag(s){
@@ -365,12 +492,13 @@ function stTag(s){
   return '<span class="text-amber-400 font-bold">Pendente ⏳</span>';
 }
 
-function slots(){
+async function slots(){
   const d=$('agData').value,erro=$('agErro');hora='';
   erro.classList.add('hidden');
   if(!d){$('slots').innerHTML='';return}
   const dt=new Date(d+'T12:00:00');
   if(dt.getDay()===0){erro.textContent='Domingo estamos fechados. Escolha outro dia.';erro.classList.remove('hidden');$('slots').innerHTML='';return}
+  await carregarHorariosOcupados(d);
   const agora=new Date(),hoje=iso(agora);
   $('slots').innerHTML=CFG.horas.map(h=>{
     const passou=d===hoje&&parseInt(h)<=agora.getHours();
@@ -389,19 +517,23 @@ $('agTel').addEventListener('input',e=>{
   e.target.value=v.length>6?`(${v.slice(0,2)}) ${v.slice(2,v.length>10?7:6)}-${v.slice(v.length>10?7:6)}`:v.length>2?`(${v.slice(0,2)}) ${v.slice(2)}`:v;
 });
 
-$('form').addEventListener('submit',e=>{
+$('form').addEventListener('submit',async e=>{
   e.preventDefault();
   const d=$('agData').value,nome=$('agNomeCli').value.trim(),tel=$('agTel').value.trim();
   if(!hora)return toast('Escolha um horário');
   if(new Date(d+'T12:00:00').getDay()===0)return toast('Domingo fechado');
   if(tel.replace(/\D/g,'').length<10)return toast('Confira o número de WhatsApp');
+  await carregarHorariosOcupados(d);
   if(ocupado(d,hora))return toast('Esse horário acabou de ser reservado');
 
   const nomesServicos = carrinho.map(s => s.nome).join(' + ');
-  const valorTotal = brl(carrinho.reduce((acc, curr) => acc + curr.preco, 0));
+  const totalNumerico = carrinho.reduce((acc, curr) => acc + curr.preco, 0);
+  const valorTotal = brl(totalNumerico);
 
   const a={id:'HC-'+Date.now().toString(36).toUpperCase().slice(-5),servico:nomesServicos,preco:valorTotal,dataISO:d,hora,cliente:nome,tel,status:'Pendente'};
   ags.unshift(a);save();badge();
+  await salvarAgendamentoNoBanco(a, totalNumerico);
+  await dispararAutomacao("novo_agendamento", a);
 
   const msg=`*Pedido de agendamento* (${a.id})\n*Serviços:* ${nomesServicos}\n*Total:* ${valorTotal}\n*Data:* ${br(d)} às ${hora}\n*Nome:* ${nome}\n*WhatsApp:* ${tel}\n\nAguardo a confirmação, Lucas!`;
   fechar('mAg');e.target.reset();
@@ -433,11 +565,13 @@ function lista(){
   </div>`).join(''):`<p class="text-center text-neutral-400 py-10 text-sm">Nenhum horário neste aparelho.</p>`;
 }
 
-$('lista').addEventListener('click',e=>{
+$('lista').addEventListener('click',async e=>{
   const b=e.target.closest('[data-cancel]');if(!b)return;
   const a=ags.find(x=>x.id===b.dataset.cancel);
   if(a&&confirm('Cancelar este horário?')){
     a.status='Cancelado';save();badge();lista();
+    await atualizarStatusNoBanco(a, 'Cancelado');
+    await dispararAutomacao("agendamento_cancelado", a);
     window.open(zapUrl(`Olá Lucas! Preciso cancelar o agendamento ${a.id} (${a.servico}) de ${br(a.dataISO)} às ${a.hora}.`),'_blank','noopener');
   }
 });
@@ -486,13 +620,15 @@ $('tabHistorico').onclick = () => {
   renderAdmin();
 };
 
-function alterarStatusAdmin(id, novoStatus){
+async function alterarStatusAdmin(id, novoStatus){
   const item = ags.find(a => a.id === id);
   if(!item) return;
   item.status = novoStatus;
   save();
   renderAdmin();
   toast(`Agendamento ${novoStatus.toLowerCase()} ✓`);
+  await atualizarStatusNoBanco(item, novoStatus);
+  await dispararAutomacao(novoStatus === 'Confirmado' ? "agendamento_confirmado" : "agendamento_recusado", item);
 
   const limpo = item.tel.replace(/\D/g, '');
   if(limpo){
@@ -507,9 +643,10 @@ function alterarStatusAdmin(id, novoStatus){
   }
 }
 
-function abrirAdminComSenha(){
+async function abrirAdminComSenha(){
   const pass = prompt('Digite a senha de acesso ao Painel Admin:');
   if(pass === CFG.senha){
+    await carregarAgendamentosAdmin();
     renderAdmin();
     abrir('mAdm');
   } else if(pass !== null) {
@@ -521,7 +658,9 @@ $('btnAdmin').onclick = abrirAdminComSenha;
 window.addEventListener('hashchange',()=>{if(window.location.hash==='#admin'){abrirAdminComSenha();window.location.hash='';}});
 if(window.location.hash==='#admin'){abrirAdminComSenha();window.location.hash='';}
 
+iniciarSupabase();
 config();chips();grid();badge();
+carregarAgendamentosAdmin();
 </script>
 </body>
 </html>
