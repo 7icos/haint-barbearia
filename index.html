@@ -103,7 +103,6 @@ section.bg-neutral-950,footer.bg-neutral-950{background:rgba(10,10,10,.72)}
   <p id="vazio" class="hidden text-center py-16 text-neutral-400">Nenhum serviço encontrado.</p>
 </main>
 
-<!-- BARRA FLUTUANTE DE CARRINHO / SELEÇÃO DE SERVIÇOS -->
 <div id="barraCarrinho" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 hidden bg-neutral-900/95 backdrop-blur border border-amber-500/50 p-4 rounded-2xl shadow-2xl w-[92%] max-w-lg flex items-center justify-between gap-4">
   <div>
     <p class="text-xs text-amber-500 font-bold uppercase tracking-wider"><span id="carrinhoQtd">0</span> serviço(s) selecionado(s)</p>
@@ -134,7 +133,6 @@ section.bg-neutral-950,footer.bg-neutral-950{background:rgba(10,10,10,.72)}
 
 <a id="zapFlut" target="_blank" rel="noopener" aria-label="WhatsApp" class="fixed right-4 z-40 w-14 h-14 bg-emerald-600 hover:bg-emerald-500 rounded-full flex items-center justify-center text-2xl shadow-xl transition hover:scale-105" style="bottom:calc(1.25rem + env(safe-area-inset-bottom,0px))">💬</a>
 
-<!-- Modal Agendar -->
 <div id="mAg" class="modal fixed inset-0 z-50 bg-neutral-950/80 flex items-center justify-center p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label="Agendar">
   <div class="box bg-neutral-900 border border-neutral-800 rounded-3xl max-w-md w-full p-6 max-h-[90vh] overflow-y-auto relative shadow-2xl">
     <button data-close="mAg" aria-label="Fechar" class="absolute top-3 right-4 p-2 text-neutral-400 hover:text-white text-xl">✕</button>
@@ -166,22 +164,20 @@ section.bg-neutral-950,footer.bg-neutral-950{background:rgba(10,10,10,.72)}
   </div>
 </div>
 
-<!-- Meus horários -->
 <div id="mMeus" class="modal fixed inset-0 z-50 bg-neutral-950/80 flex items-center justify-center p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label="Meus horários">
   <div class="box bg-neutral-900 border border-neutral-800 rounded-3xl max-w-lg w-full p-6 max-h-[85vh] overflow-y-auto relative shadow-2xl">
     <button data-close="mMeus" aria-label="Fechar" class="absolute top-3 right-4 p-2 text-neutral-400 hover:text-white text-xl">✕</button>
     <h3 class="serif text-xl font-bold mb-1">Meus horários</h3>
-    <p class="text-xs text-neutral-500 mb-4">Salvos neste aparelho e sincronizados com o sistema.</p>
+    <p class="text-xs text-neutral-500 mb-4">Apenas os agendamentos feitos neste aparelho.</p>
     <div id="lista" class="divide-y divide-neutral-800"></div>
   </div>
 </div>
 
-<!-- Painel Admin do Lucas com Histórico e Abas -->
 <div id="mAdm" class="modal fixed inset-0 z-[60] bg-neutral-950/90 flex items-center justify-center p-4 backdrop-blur-md" role="dialog" aria-modal="true" aria-label="Painel do barbeiro">
   <div class="box bg-neutral-900 border border-neutral-800 rounded-3xl max-w-2xl w-full p-6 max-h-[88vh] overflow-y-auto relative shadow-2xl">
     <button data-close="mAdm" aria-label="Fechar" class="absolute top-3 right-4 p-2 text-neutral-400 hover:text-white text-xl">✕</button>
     <h3 class="serif text-xl font-bold text-amber-500">Painel do Lucas</h3>
-    <p class="text-xs text-neutral-500 mb-3">Gerencie agendamentos e acompanhe seu histórico de atendimentos.</p>
+    <p class="text-xs text-neutral-500 mb-3">Gerencie todos os agendamentos e acompanhe seu histórico.</p>
     
     <div class="flex gap-2 mb-4 border-b border-neutral-800 pb-3">
       <button id="tabPendentes" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-amber-600 text-neutral-950">Pendentes / Ativos</button>
@@ -199,7 +195,7 @@ const CFG = {
   nome: "HAINT",
   zap: "5511964258775",
   horas: ["09:00","10:00","11:00","13:00","14:00","15:00","16:00","17:00","18:00","19:00"],
-  senha: "1234",
+  senha: "010818",
   supabaseUrl: "https://vlfoeebwbiggnibqatgp.supabase.co",
   supabaseAnonKey: "sb_publishable_33H_szW1Brw2JBkUMfJFyA_lL4PC-hZ",
   webhookUrl: ""
@@ -230,8 +226,12 @@ const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const brl=v=>v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
 const KEY='haint_agendamentos_v1';
-let ags=[];try{ags=JSON.parse(localStorage.getItem(KEY))||[]}catch{}
-const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(ags))}catch{}};
+
+let meusAgs=[];try{meusAgs=JSON.parse(localStorage.getItem(KEY))||[]}catch{}
+const saveMeus=()=>{try{localStorage.setItem(KEY,JSON.stringify(meusAgs))}catch{}};
+
+let adminAgs=[];
+
 let cat='Todos',termo='',hora='';
 let carrinho = [];
 let abaAdminAtual = 'pendentes';
@@ -279,7 +279,9 @@ async function salvarAgendamentoNoBanco(item, valorNumerico){
 
 async function atualizarStatusNoBanco(item, novoStatus){
   if(!db) return;
-  const statusBanco = novoStatus === "Confirmado" ? "confirmado" : "cancelado";
+  const statusBanco = novoStatus === "Confirmado"
+    ? "confirmado"
+    : (novoStatus === "Cancelado" ? "cancelado" : "recusado");
   const horaFormatada = item.hora.length === 5 ? `${item.hora}:00` : item.hora;
   const { error } = await db
     .from("agendamentos")
@@ -298,10 +300,10 @@ async function carregarHorariosOcupados(dataISO){
       .from("agendamentos")
       .select("horario, status")
       .eq("data_agendamento", dataISO)
-      .neq("status", "cancelado");
+      .not("status", "in", '("cancelado","recusado")');
     if(!error && Array.isArray(data)){
       data.forEach(row => {
-        if(row.horario){
+        if(row.horario && row.status !== "cancelado" && row.status !== "recusado"){
           const hhmm = String(row.horario).slice(0, 5);
           taken[sk(dataISO, hhmm)] = true;
         }
@@ -321,13 +323,14 @@ async function carregarAgendamentosAdmin(){
       .order("criado_em", { ascending: false })
       .limit(100);
     if(!error && Array.isArray(data)){
-      const remotos = data.map(r => {
+      adminAgs = data.map(r => {
         const matchId = String(r.servico_nome || "").match(/\[(HC-[A-Z0-9]+)\]/);
         const idGerado = matchId ? matchId[1] : String(r.id).slice(0, 7).toUpperCase();
         const servLimpo = String(r.servico_nome || "").replace(/\s*\[HC-[A-Z0-9]+\]$/, "");
         let st = "Pendente";
         if(r.status === "confirmado" || r.status === "concluido") st = "Confirmado";
         else if(r.status === "cancelado") st = "Cancelado";
+        else if(r.status === "recusado") st = "Recusado";
         return {
           id: idGerado,
           servico: servLimpo,
@@ -339,13 +342,6 @@ async function carregarAgendamentosAdmin(){
           status: st
         };
       });
-
-      const mapa = new Map();
-      remotos.forEach(x => mapa.set(x.id, x));
-      ags.forEach(x => { if(!mapa.has(x.id)) mapa.set(x.id, x); });
-      ags = Array.from(mapa.values());
-      save();
-      badge();
     }
   }catch(err){
     console.warn("Erro ao carregar agendamentos no admin:", err);
@@ -485,7 +481,7 @@ $('btnAbrirAgendamento').onclick = async () => {
 };
 
 const sk=(d,h)=>d+'_'+h.replace(':','');
-function ocupado(d,h){return !!taken[sk(d,h)]||ags.some(a=>a.dataISO===d&&a.hora===h&&a.status!=='Cancelado'&&a.status!=='Recusado')}
+function ocupado(d,h){return !!taken[sk(d,h)]||meusAgs.some(a=>a.dataISO===d&&a.hora===h&&a.status!=='Cancelado'&&a.status!=='Recusado')}
 function stTag(s){
   if(s==='Confirmado')return '<span class="text-emerald-400 font-bold">Confirmado ✓</span>';
   if(s==='Recusado'||s==='Cancelado')return `<span class="text-red-400 font-bold">${s}</span>`;
@@ -531,7 +527,7 @@ $('form').addEventListener('submit',async e=>{
   const valorTotal = brl(totalNumerico);
 
   const a={id:'HC-'+Date.now().toString(36).toUpperCase().slice(-5),servico:nomesServicos,preco:valorTotal,dataISO:d,hora,cliente:nome,tel,status:'Pendente'};
-  ags.unshift(a);save();badge();
+  meusAgs.unshift(a);saveMeus();badge();
   await salvarAgendamentoNoBanco(a, totalNumerico);
   await dispararAutomacao("novo_agendamento", a);
 
@@ -545,11 +541,11 @@ $('form').addEventListener('submit',async e=>{
   toast('Pedido enviado. Aguarde a confirmação no WhatsApp ✓');
 });
 
-function badge(){const n=ags.filter(a=>a.status!=='Cancelado').length,b=$('badge');b.textContent=n;b.classList.toggle('hidden',!n)}
+function badge(){const n=meusAgs.filter(a=>a.status!=='Cancelado'&&a.status!=='Recusado').length,b=$('badge');b.textContent=n;b.classList.toggle('hidden',!n)}
 $('btnMeus').onclick=()=>{lista();abrir('mMeus')};
 
 function lista(){
-  $('lista').innerHTML=ags.length?ags.map(a=>`
+  $('lista').innerHTML=meusAgs.length?meusAgs.map(a=>`
   <div class="py-3.5 space-y-2 text-xs">
     <div class="flex justify-between gap-2 font-semibold">
       <span>${esc(a.id)} · ${esc(a.servico)}</span>
@@ -560,19 +556,19 @@ function lista(){
       <a href="${gerarLinkGoogleAgenda(a)}" target="_blank" rel="noopener" class="inline-flex items-center gap-1 text-amber-500 hover:underline font-medium">
         📅 Adicionar ao Google Agenda
       </a>
-      ${a.status!=='Cancelado'?`<button data-cancel="${esc(a.id)}" class="text-red-400 hover:underline">Cancelar horário</button>`:''}
+      ${a.status!=='Cancelado'&&a.status!=='Recusado'?`<button data-cancel-meu="${esc(a.id)}" class="text-red-400 hover:underline">Cancelar meu horário</button>`:''}
     </div>
   </div>`).join(''):`<p class="text-center text-neutral-400 py-10 text-sm">Nenhum horário neste aparelho.</p>`;
 }
 
 $('lista').addEventListener('click',async e=>{
-  const b=e.target.closest('[data-cancel]');if(!b)return;
-  const a=ags.find(x=>x.id===b.dataset.cancel);
-  if(a&&confirm('Cancelar este horário?')){
-    a.status='Cancelado';save();badge();lista();
+  const b=e.target.closest('[data-cancel-meu]');if(!b)return;
+  const a=meusAgs.find(x=>x.id===b.dataset.cancelMeu);
+  if(a&&confirm('Cancelar o seu horário?')){
+    a.status='Cancelado';saveMeus();badge();lista();
     await atualizarStatusNoBanco(a, 'Cancelado');
     await dispararAutomacao("agendamento_cancelado", a);
-    window.open(zapUrl(`Olá Lucas! Preciso cancelar o agendamento ${a.id} (${a.servico}) de ${br(a.dataISO)} às ${a.hora}.`),'_blank','noopener');
+    window.open(zapUrl(`Olá Lucas! Cancelei meu agendamento ${a.id} (${a.servico}) do dia ${br(a.dataISO)} às ${a.hora}.`),'_blank','noopener');
   }
 });
 
@@ -581,9 +577,9 @@ function renderAdmin(){
   let listaFiltrada = [];
 
   if(abaAdminAtual === 'pendentes'){
-    listaFiltrada = ags.filter(a => a.status === 'Pendente' || a.status === 'Aguardando');
+    listaFiltrada = adminAgs.filter(a => a.status === 'Pendente' || a.status === 'Aguardando');
   } else {
-    listaFiltrada = ags.filter(a => a.status === 'Confirmado' || a.status === 'Recusado' || a.status === 'Cancelado');
+    listaFiltrada = adminAgs.filter(a => a.status === 'Confirmado' || a.status === 'Recusado' || a.status === 'Cancelado');
   }
 
   if(!listaFiltrada.length){
@@ -598,9 +594,10 @@ function renderAdmin(){
         <span>${stTag(p.status)}</span>
       </div>
       <p class="text-neutral-300">📅 <strong>${br(p.dataISO)}</strong> às <strong>${esc(p.hora)}h</strong> · Cliente: <strong>${esc(p.cliente)}</strong> (${esc(p.tel)})</p>
-      <div class="flex gap-2 pt-2">
+      <div class="flex flex-wrap gap-2 pt-2">
         ${p.status !== 'Confirmado' ? `<button onclick="alterarStatusAdmin('${p.id}', 'Confirmado')" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-bold transition">Confirmar Horário (Enviar Zap)</button>` : ''}
         ${p.status !== 'Recusado' ? `<button onclick="alterarStatusAdmin('${p.id}', 'Recusado')" class="px-3 py-1.5 bg-red-600/80 hover:bg-red-600 text-white rounded-lg font-semibold transition">Recusar</button>` : ''}
+        ${p.status !== 'Cancelado' ? `<button onclick="alterarStatusAdmin('${p.id}', 'Cancelado')" class="px-3 py-1.5 bg-neutral-700 hover:bg-red-700 text-white rounded-lg font-semibold transition">Cancelar Horário</button>` : ''}
       </div>
     </div>
   `).join('');
@@ -621,14 +618,24 @@ $('tabHistorico').onclick = () => {
 };
 
 async function alterarStatusAdmin(id, novoStatus){
-  const item = ags.find(a => a.id === id);
+  const item = adminAgs.find(a => a.id === id);
   if(!item) return;
   item.status = novoStatus;
-  save();
+
+  const localItem = meusAgs.find(a => a.id === id);
+  if(localItem){
+    localItem.status = novoStatus;
+    saveMeus();
+    badge();
+  }
+
   renderAdmin();
-  toast(`Agendamento ${novoStatus.toLowerCase()} ✓`);
+  toast(`Agendamento marcado como ${novoStatus.toLowerCase()} ✓`);
   await atualizarStatusNoBanco(item, novoStatus);
-  await dispararAutomacao(novoStatus === 'Confirmado' ? "agendamento_confirmado" : "agendamento_recusado", item);
+  const eventoWebhook = novoStatus === 'Confirmado'
+    ? "agendamento_confirmado"
+    : (novoStatus === 'Cancelado' ? "agendamento_cancelado" : "agendamento_recusado");
+  await dispararAutomacao(eventoWebhook, item);
 
   const limpo = item.tel.replace(/\D/g, '');
   if(limpo){
@@ -636,6 +643,8 @@ async function alterarStatusAdmin(id, novoStatus){
     let msg = '';
     if(novoStatus === 'Confirmado'){
       msg = `Fala ${item.cliente}, aqui é o Lucas da ${CFG.nome}! Seu agendamento para *${item.servico}* (Total: ${item.preco}) no dia *${br(item.dataISO)} às ${item.hora}* foi *CONFIRMADO*! Te aguardo aqui na barbearia. ✂️🔥`;
+    } else if(novoStatus === 'Cancelado'){
+      msg = `Olá ${item.cliente}, aqui é o Lucas da ${CFG.nome}. Seu agendamento para *${item.servico}* no dia *${br(item.dataISO)} às ${item.hora}* foi *CANCELADO*. Se quiser remarcar, é só me chamar por aqui!`;
     } else {
       msg = `Olá ${item.cliente}, aqui é o Lucas da ${CFG.nome}. Infelizmente não consegui vaga para o horário do dia *${br(item.dataISO)} às ${item.hora}*. Podemos remarcar para outro momento?`;
     }
@@ -660,7 +669,6 @@ if(window.location.hash==='#admin'){abrirAdminComSenha();window.location.hash=''
 
 iniciarSupabase();
 config();chips();grid();badge();
-carregarAgendamentosAdmin();
 </script>
 </body>
 </html>
